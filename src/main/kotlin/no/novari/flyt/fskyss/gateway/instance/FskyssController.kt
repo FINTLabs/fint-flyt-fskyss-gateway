@@ -1,8 +1,8 @@
-package no.novari.flyt.example.gateway.instance
+package no.novari.flyt.fskyss.gateway.instance
 
-import no.novari.flyt.example.gateway.instance.model.AdvancedExample
-import no.novari.flyt.example.gateway.instance.model.SimpleExample
-import no.novari.flyt.example.gateway.instance.model.SimpleExampleStatus
+import no.novari.flyt.fskyss.gateway.instance.model.AdvancedExample
+import no.novari.flyt.fskyss.gateway.instance.model.SimpleExample
+import no.novari.flyt.fskyss.gateway.instance.model.SimpleExampleStatus
 import no.novari.flyt.gateway.webinstance.InstanceProcessor
 import no.novari.flyt.webresourceserver.UrlPaths.EXTERNAL_API
 import org.springframework.beans.factory.annotation.Qualifier
@@ -17,8 +17,8 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@RequestMapping("$EXTERNAL_API/example/instances")
-class ExampleController(
+@RequestMapping("$EXTERNAL_API/fskyss/instances")
+class FskyssController(
     @param:Qualifier("simpleProcessor")
     private val simpleExampleProcessor: InstanceProcessor<SimpleExample>,
     private val advancedExampleProcessor: InstanceProcessor<AdvancedExample>,

@@ -1,9 +1,9 @@
-package no.novari.flyt.example.gateway.instance.advanced
+package no.novari.flyt.fskyss.gateway.instance.advanced
 
-import no.novari.flyt.example.gateway.instance.mapping.putOrEmpty
-import no.novari.flyt.example.gateway.instance.model.AdvancedExample
-import no.novari.flyt.example.gateway.instance.model.Dokument
-import no.novari.flyt.example.gateway.instance.model.Saksbehandler
+import no.novari.flyt.fskyss.gateway.instance.mapping.putOrEmpty
+import no.novari.flyt.fskyss.gateway.instance.model.AdvancedExample
+import no.novari.flyt.fskyss.gateway.instance.model.Dokument
+import no.novari.flyt.fskyss.gateway.instance.model.Saksbehandler
 import no.novari.flyt.gateway.webinstance.InstanceMapper
 import no.novari.flyt.gateway.webinstance.model.File
 import no.novari.flyt.gateway.webinstance.model.instance.InstanceObject
