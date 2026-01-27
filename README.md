@@ -7,7 +7,7 @@ The application includes examples of both simple and advanced usage:
 - **Advanced**: demonstrates the use of collections and support for file upload.
 
 ## Technology
-- Spring Boot 3.4
+- Spring Boot 3.5
 - Java 21
 - Kotlin
 - ktlint
