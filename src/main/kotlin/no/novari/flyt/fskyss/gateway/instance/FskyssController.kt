@@ -8,7 +8,6 @@ import no.novari.flyt.webresourceserver.UrlPaths.EXTERNAL_API
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.Authentication
-import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -33,7 +32,7 @@ class FskyssController(
     @PostMapping("/simple")
     fun createSimpleExample(
         @RequestBody simpleExample: SimpleExample,
-        @AuthenticationPrincipal authentication: Authentication,
+        authentication: Authentication,
     ): ResponseEntity<Void> {
         return simpleExampleProcessor.processInstance(authentication, simpleExample)
     }
@@ -41,7 +40,7 @@ class FskyssController(
     @PostMapping("/advanced")
     fun createAdvancedExample(
         @RequestBody advancedExample: AdvancedExample,
-        @AuthenticationPrincipal authentication: Authentication,
+        authentication: Authentication,
     ): ResponseEntity<Void> {
         return advancedExampleProcessor.processInstance(authentication, advancedExample)
     }
