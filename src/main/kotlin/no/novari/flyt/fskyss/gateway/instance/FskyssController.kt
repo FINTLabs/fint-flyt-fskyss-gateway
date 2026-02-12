@@ -1,11 +1,9 @@
 package no.novari.flyt.fskyss.gateway.instance
 
 import no.novari.flyt.fskyss.gateway.instance.model.AdvancedExample
-import no.novari.flyt.fskyss.gateway.instance.model.SimpleExample
 import no.novari.flyt.fskyss.gateway.instance.model.SimpleExampleStatus
 import no.novari.flyt.gateway.webinstance.InstanceProcessor
 import no.novari.flyt.webresourceserver.UrlPaths.EXTERNAL_API
-import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.Authentication
 import org.springframework.web.bind.annotation.GetMapping
@@ -18,8 +16,6 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @RequestMapping("$EXTERNAL_API/fskyss/instances")
 class FskyssController(
-    @param:Qualifier("simpleProcessor")
-    private val simpleExampleProcessor: InstanceProcessor<SimpleExample>,
     private val advancedExampleProcessor: InstanceProcessor<AdvancedExample>,
 ) {
     @GetMapping("/simple/{instanceId}/status")
@@ -27,14 +23,6 @@ class FskyssController(
         @PathVariable instanceId: String,
     ): SimpleExampleStatus {
         return SimpleExampleStatus(instanceId)
-    }
-
-    @PostMapping("/simple")
-    fun createSimpleExample(
-        @RequestBody simpleExample: SimpleExample,
-        authentication: Authentication,
-    ): ResponseEntity<Void> {
-        return simpleExampleProcessor.processInstance(authentication, simpleExample)
     }
 
     @PostMapping("/advanced")
