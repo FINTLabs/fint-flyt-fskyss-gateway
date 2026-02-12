@@ -1,9 +1,8 @@
 package no.novari.flyt.fskyss.gateway.instance
 
-import no.novari.flyt.fskyss.gateway.instance.model.AdvancedExample
-import no.novari.flyt.fskyss.gateway.instance.model.SimpleExampleStatus
 import no.novari.flyt.gateway.webinstance.InstanceProcessor
 import no.novari.flyt.webresourceserver.UrlPaths.EXTERNAL_API
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.Authentication
 import org.springframework.web.bind.annotation.GetMapping
@@ -12,24 +11,32 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.server.ResponseStatusException
 
 @RestController
 @RequestMapping("$EXTERNAL_API/fskyss/instances")
 class FskyssController(
-    private val advancedExampleProcessor: InstanceProcessor<AdvancedExample>,
+    private val fskyssProcessor: InstanceProcessor<FskyssInstance>,
+    private val caseStatusService: CaseStatusService,
 ) {
-    @GetMapping("/simple/{instanceId}/status")
-    fun getSimpleStatus(
-        @PathVariable instanceId: String,
-    ): SimpleExampleStatus {
-        return SimpleExampleStatus(instanceId)
-    }
+    @GetMapping("{sourceApplicationInstanceId}/status")
+    fun getCaseStatus(
+        authentication: Authentication,
+        @PathVariable sourceApplicationInstanceId: String,
+    ): ResponseEntity<CaseStatus> =
+        caseStatusService
+            .getCaseStatus(authentication, sourceApplicationInstanceId)
+            ?.let { ResponseEntity.ok(it) }
+            ?: throw ResponseStatusException(
+                HttpStatus.NOT_FOUND,
+                "Case with sourceApplicationInstanceId=$sourceApplicationInstanceId could not be found",
+            )
 
-    @PostMapping("/advanced")
-    fun createAdvancedExample(
-        @RequestBody advancedExample: AdvancedExample,
+    @PostMapping
+    fun createFskyssInstance(
+        @RequestBody fskyssInstance: FskyssInstance,
         authentication: Authentication,
     ): ResponseEntity<Void> {
-        return advancedExampleProcessor.processInstance(authentication, advancedExample)
+        return fskyssProcessor.processInstance(authentication, fskyssInstance)
     }
 }
