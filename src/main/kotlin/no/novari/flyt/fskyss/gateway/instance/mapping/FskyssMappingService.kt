@@ -1,17 +1,8 @@
 package no.novari.flyt.fskyss.gateway.instance.mapping
 
-import no.novari.flyt.fskyss.gateway.instance.Address
-import no.novari.flyt.fskyss.gateway.instance.Document
 import no.novari.flyt.fskyss.gateway.instance.FskyssInstance
 import no.novari.flyt.fskyss.gateway.instance.Guardian
-import no.novari.flyt.fskyss.gateway.instance.Municipality
-import no.novari.flyt.fskyss.gateway.instance.Order
 import no.novari.flyt.fskyss.gateway.instance.OrderPart
-import no.novari.flyt.fskyss.gateway.instance.School
-import no.novari.flyt.fskyss.gateway.instance.SchoolClass
-import no.novari.flyt.fskyss.gateway.instance.Student
-import no.novari.flyt.fskyss.gateway.instance.Transport
-import no.novari.flyt.fskyss.gateway.instance.Upload
 import no.novari.flyt.gateway.webinstance.InstanceMapper
 import no.novari.flyt.gateway.webinstance.model.File
 import no.novari.flyt.gateway.webinstance.model.instance.InstanceObject
@@ -27,267 +18,148 @@ class FskyssMappingService : InstanceMapper<FskyssInstance> {
         persistFile: (File) -> UUID,
     ): InstanceObject {
         val sourceApplicationInstanceId = incomingInstance.instanceId.toString()
-        val documentInstanceObjects =
-            mapDocumentToInstanceObjects(
+        val fileId =
+            persistDocument(
                 persistFile = persistFile,
                 sourceApplicationId = sourceApplicationId,
                 sourceApplicationInstanceId = sourceApplicationInstanceId,
-                document = incomingInstance.document,
-            )
-
-        val objectCollectionPerKey =
-            mutableMapOf<String, Collection<InstanceObject>>(
-                "documents" to documentInstanceObjects,
-                "order" to listOf(mapOrderToInstanceObject(incomingInstance.order)),
-                "orderParts" to mapOrderPartsToInstanceObjects(incomingInstance.orderParts),
-                "student" to listOf(mapStudentToInstanceObject(incomingInstance.student)),
-                "schoolClass" to listOf(mapSchoolClassToInstanceObject(incomingInstance.schoolClass)),
-                "guardians" to mapGuardiansToInstanceObjects(incomingInstance.guardians),
-                "school" to listOf(mapSchoolToInstanceObject(incomingInstance.school)),
-                "upload" to listOf(mapUploadToInstanceObject(incomingInstance.upload)),
+                incomingInstance = incomingInstance,
             )
 
         val valuePerKey =
             buildMap {
                 putOrEmpty("version", incomingInstance.version)
-                putOrEmpty("instanceId", incomingInstance.instanceId)
+                putOrEmpty("instance_id", incomingInstance.instanceId)
+
+                putOrEmpty("document.file_name", incomingInstance.document.fileName)
+                putOrEmpty("document.title", incomingInstance.document.title)
+                putOrEmpty("document.mime_type", incomingInstance.document.mimeType)
+                putOrEmpty("document.direction", incomingInstance.document.direction)
+                putOrEmpty("document.category", incomingInstance.document.category)
+                putOrEmpty("document.content_base64", fileId)
+
+                putOrEmpty("order.order_id", incomingInstance.order.orderId)
+                putOrEmpty("order.school_year", incomingInstance.order.schoolYear)
+                putOrEmpty("order.from_date", incomingInstance.order.fromDate)
+                putOrEmpty("order.to_date", incomingInstance.order.toDate)
+                putOrEmpty("order.status", incomingInstance.order.status)
+                putOrEmpty("order.decision_reason", incomingInstance.order.decisionReason)
+                putOrEmpty("order.case_reference", incomingInstance.order.caseReference)
+                putOrEmpty("order.is_county_decision", incomingInstance.order.isCountyDecision)
+                putOrEmpty("order.is_municipal_decision", incomingInstance.order.isMunicipalDecision)
+                putOrEmpty("order.is_shared_custody", incomingInstance.order.isSharedCustody)
+                putOrEmpty("order.is_urgent_temporary", incomingInstance.order.isUrgentTemporary)
+                putOrEmpty("order.requirements", incomingInstance.order.requirements.joinToString(","))
+
+                putOrEmpty("student.student_id", incomingInstance.student.studentId)
+                putOrEmpty("student.ssn", incomingInstance.student.ssn)
+                putOrEmpty("student.first_name", incomingInstance.student.firstName)
+                putOrEmpty("student.middle_name", incomingInstance.student.middleName)
+                putOrEmpty("student.last_name", incomingInstance.student.lastName)
+                putOrEmpty("student.address.street_address", incomingInstance.student.address.streetAddress)
+                putOrEmpty("student.address.postal_code", incomingInstance.student.address.postalCode)
+                putOrEmpty("student.address.city", incomingInstance.student.address.city)
+                putOrEmpty("student.email", incomingInstance.student.email)
+                putOrEmpty("student.phone", incomingInstance.student.phone)
+                putOrEmpty("student.municipality_number", incomingInstance.student.municipalityNumber)
+
+                putOrEmpty("school_class.class_name", incomingInstance.schoolClass.className)
+                putOrEmpty("school_class.grade_level", incomingInstance.schoolClass.gradeLevel)
+
+                putOrEmpty("school.name", incomingInstance.school.name)
+                putOrEmpty("school.school_number", incomingInstance.school.schoolNumber)
+                putOrEmpty("school.school_type", incomingInstance.school.schoolType)
+                putOrEmpty("school.is_private", incomingInstance.school.isPrivate)
+                putOrEmpty("school.is_special", incomingInstance.school.isSpecial)
+                putOrEmpty("school.vigo_id", incomingInstance.school.vigoId)
+                putOrEmpty("school.municipality.name", incomingInstance.school.municipality.name)
+                putOrEmpty(
+                    "school.municipality.municipality_number",
+                    incomingInstance.school.municipality.municipalityNumber,
+                )
+                putOrEmpty("school.municipality.county_number", incomingInstance.school.municipality.countyNumber)
+                putOrEmpty("school.organisation_name", incomingInstance.school.organisationName)
+
+                putOrEmpty("upload.uploaded_at", incomingInstance.upload.uploadedAt)
+                putOrEmpty("upload.uploaded_by", incomingInstance.upload.uploadedBy)
+                putOrEmpty("upload.document_type", incomingInstance.upload.documentType)
+                putOrEmpty("upload.store_in_secure_zone", incomingInstance.upload.storeInSecureZone)
+                putOrEmpty("upload.duplicate_handling", incomingInstance.upload.duplicateHandling)
             }
+
+        val objectCollectionPerKey =
+            mutableMapOf<String, Collection<InstanceObject>>(
+                "order_parts" to mapOrderPartsToInstanceObjects(incomingInstance.orderParts),
+                "guardians" to mapGuardiansToInstanceObjects(incomingInstance.guardians),
+            )
 
         return InstanceObject(valuePerKey, objectCollectionPerKey)
     }
 
-    private fun mapDocumentToInstanceObjects(
+    private fun persistDocument(
         persistFile: (File) -> UUID,
         sourceApplicationId: Long,
         sourceApplicationInstanceId: String,
-        document: Document,
-    ): List<InstanceObject> {
-        val mediaType = MediaType.parseMediaType(document.mimeType)
+        incomingInstance: FskyssInstance,
+    ): UUID {
+        val mediaType = MediaType.parseMediaType(incomingInstance.document.mimeType)
         val file =
             File(
-                name = document.fileName,
+                name = incomingInstance.document.fileName,
                 type = mediaType,
                 sourceApplicationId = sourceApplicationId,
                 sourceApplicationInstanceId = sourceApplicationInstanceId,
                 encoding = "UTF-8",
-                base64Contents = document.contentBase64,
+                base64Contents = incomingInstance.document.contentBase64,
             )
-        val fileId = persistFile(file)
-
-        return listOf(
-            InstanceObject(
-                valuePerKey =
-                    buildMap {
-                        putOrEmpty("title", document.title)
-                        putOrEmpty("fileName", document.fileName)
-                        putOrEmpty("mediaType", mediaType.toString())
-                        putOrEmpty("file", fileId)
-                        putOrEmpty("direction", document.direction)
-                        putOrEmpty("category", document.category)
-                        putOrEmpty("mainDocument", true)
-                    },
-            ),
-        )
-    }
-
-    private fun mapOrderToInstanceObject(order: Order): InstanceObject {
-        val valuePerKey =
-            buildMap {
-                putOrEmpty("orderId", order.orderId)
-                putOrEmpty("schoolYear", order.schoolYear)
-                putOrEmpty("fromDate", order.fromDate)
-                putOrEmpty("toDate", order.toDate)
-                putOrEmpty("status", order.status)
-                putOrEmpty("decisionReason", order.decisionReason)
-                putOrEmpty("caseReference", order.caseReference)
-                putOrEmpty("isCountyDecision", order.isCountyDecision)
-                putOrEmpty("isMunicipalDecision", order.isMunicipalDecision)
-                putOrEmpty("isSharedCustody", order.isSharedCustody)
-                putOrEmpty("isUrgentTemporary", order.isUrgentTemporary)
-            }
-
-        val objectCollectionPerKey =
-            mutableMapOf<String, Collection<InstanceObject>>(
-                "requirements" to mapRequirementsToInstanceObjects(order.requirements),
-            )
-
-        return InstanceObject(valuePerKey, objectCollectionPerKey)
+        return persistFile(file)
     }
 
     private fun mapOrderPartsToInstanceObjects(orderParts: List<OrderPart>): List<InstanceObject> {
         return orderParts.map { orderPart ->
-            val valuePerKey =
-                buildMap {
-                    putOrEmpty("originAlias", orderPart.originAlias)
-                    putOrEmpty("originType", orderPart.originType)
-                    putOrEmpty("destinationName", orderPart.destinationName)
-                    putOrEmpty("fromDate", orderPart.fromDate)
-                    putOrEmpty("toDate", orderPart.toDate)
-                    putOrEmpty("approvalStatus", orderPart.approvalStatus)
-                    putOrEmpty("decisionType", orderPart.decisionType)
-                }
-
-            val objectCollectionPerKey =
-                mutableMapOf<String, Collection<InstanceObject>>(
-                    "origin" to listOf(mapAddressToInstanceObject(orderPart.origin)),
-                    "transport" to listOf(mapTransportToInstanceObject(orderPart.transport)),
-                )
-
-            InstanceObject(valuePerKey, objectCollectionPerKey)
-        }
-    }
-
-    private fun mapStudentToInstanceObject(student: Student): InstanceObject {
-        val valuePerKey =
-            buildMap {
-                putOrEmpty("studentId", student.studentId)
-                putCommonPersonFields(
-                    ssn = student.ssn,
-                    firstName = student.firstName,
-                    middleName = student.middleName,
-                    lastName = student.lastName,
-                    email = student.email,
-                    phone = student.phone,
-                )
-                putOrEmpty("municipalityNumber", student.municipalityNumber)
-            }
-
-        val objectCollectionPerKey =
-            mutableMapOf<String, Collection<InstanceObject>>(
-                "address" to listOf(mapAddressToInstanceObject(student.address)),
-            )
-
-        return InstanceObject(valuePerKey, objectCollectionPerKey)
-    }
-
-    private fun mapSchoolClassToInstanceObject(schoolClass: SchoolClass): InstanceObject {
-        return InstanceObject(
-            valuePerKey =
-                buildMap {
-                    putOrEmpty("className", schoolClass.className)
-                    putOrEmpty("gradeLevel", schoolClass.gradeLevel)
-                },
-        )
-    }
-
-    private fun mapGuardiansToInstanceObjects(guardians: List<Guardian>): List<InstanceObject> {
-        return guardians.map { guardian ->
-            val valuePerKey =
-                buildMap {
-                    putOrEmpty("role", guardian.role)
-                    putCommonPersonFields(
-                        ssn = guardian.ssn,
-                        firstName = guardian.firstName,
-                        middleName = guardian.middleName,
-                        lastName = guardian.lastName,
-                        email = guardian.email,
-                        phone = guardian.phone,
-                    )
-                }
-            val objectCollectionPerKey =
-                mutableMapOf<String, Collection<InstanceObject>>(
-                    "address" to listOf(mapAddressToInstanceObject(guardian.address)),
-                )
-
-            InstanceObject(valuePerKey, objectCollectionPerKey)
-        }
-    }
-
-    private fun mapSchoolToInstanceObject(school: School): InstanceObject {
-        val valuePerKey =
-            buildMap {
-                putOrEmpty("name", school.name)
-                putOrEmpty("schoolNumber", school.schoolNumber)
-                putOrEmpty("schoolType", school.schoolType)
-                putOrEmpty("isPrivate", school.isPrivate)
-                putOrEmpty("isSpecial", school.isSpecial)
-                putOrEmpty("vigoId", school.vigoId)
-                putOrEmpty("organisationName", school.organisationName)
-            }
-
-        val objectCollectionPerKey =
-            mutableMapOf<String, Collection<InstanceObject>>(
-                "municipality" to listOf(mapMunicipalityToInstanceObject(school.municipality)),
-            )
-
-        return InstanceObject(valuePerKey, objectCollectionPerKey)
-    }
-
-    private fun mapUploadToInstanceObject(upload: Upload): InstanceObject {
-        return InstanceObject(
-            valuePerKey =
-                buildMap {
-                    putOrEmpty("uploadedAt", upload.uploadedAt)
-                    putOrEmpty("uploadedBy", upload.uploadedBy)
-                    putOrEmpty("documentType", upload.documentType)
-                    putOrEmpty("storeInSecureZone", upload.storeInSecureZone)
-                    putOrEmpty("duplicateHandling", upload.duplicateHandling)
-                },
-        )
-    }
-
-    private fun mapMunicipalityToInstanceObject(municipality: Municipality): InstanceObject {
-        return InstanceObject(
-            valuePerKey =
-                buildMap {
-                    putOrEmpty("name", municipality.name)
-                    putOrEmpty("municipalityNumber", municipality.municipalityNumber)
-                    putOrEmpty("countyNumber", municipality.countyNumber)
-                },
-        )
-    }
-
-    private fun mapAddressToInstanceObject(address: Address): InstanceObject {
-        return InstanceObject(
-            valuePerKey =
-                buildMap {
-                    putOrEmpty("streetAddress", address.streetAddress)
-                    putOrEmpty("postalCode", address.postalCode)
-                    putOrEmpty("city", address.city)
-                },
-        )
-    }
-
-    private fun mapTransportToInstanceObject(transport: Transport): InstanceObject {
-        return InstanceObject(
-            valuePerKey =
-                buildMap {
-                    putOrEmpty("usesMassTransit", transport.usesMassTransit)
-                    putOrEmpty("usesTaxi", transport.usesTaxi)
-                    putOrEmpty("usesSelf", transport.usesSelf)
-                    putOrEmpty("usesBoat", transport.usesBoat)
-                    putOrEmpty("usesFerry", transport.usesFerry)
-                    putOrEmpty("usesTrain", transport.usesTrain)
-                    putOrEmpty("usesTaxiShuttle", transport.usesTaxiShuttle)
-                    putOrEmpty("usesSelfShuttle", transport.usesSelfShuttle)
-                },
-        )
-    }
-
-    private fun mapRequirementsToInstanceObjects(values: List<String>): List<InstanceObject> {
-        return values.map { value ->
             InstanceObject(
                 valuePerKey =
                     buildMap {
-                        putOrEmpty("requirement", value)
+                        putOrEmpty("origin.street_address", orderPart.origin.streetAddress)
+                        putOrEmpty("origin.postal_code", orderPart.origin.postalCode)
+                        putOrEmpty("origin.city", orderPart.origin.city)
+                        putOrEmpty("origin_alias", orderPart.originAlias)
+                        putOrEmpty("origin_type", orderPart.originType)
+                        putOrEmpty("destination_name", orderPart.destinationName)
+                        putOrEmpty("from_date", orderPart.fromDate)
+                        putOrEmpty("to_date", orderPart.toDate)
+                        putOrEmpty("approval_status", orderPart.approvalStatus)
+                        putOrEmpty("decision_type", orderPart.decisionType)
+                        putOrEmpty("transport.uses_mass_transit", orderPart.transport.usesMassTransit)
+                        putOrEmpty("transport.uses_taxi", orderPart.transport.usesTaxi)
+                        putOrEmpty("transport.uses_self", orderPart.transport.usesSelf)
+                        putOrEmpty("transport.uses_boat", orderPart.transport.usesBoat)
+                        putOrEmpty("transport.uses_ferry", orderPart.transport.usesFerry)
+                        putOrEmpty("transport.uses_train", orderPart.transport.usesTrain)
+                        putOrEmpty("transport.uses_taxi_shuttle", orderPart.transport.usesTaxiShuttle)
+                        putOrEmpty("transport.uses_self_shuttle", orderPart.transport.usesSelfShuttle)
                     },
             )
         }
     }
 
-    private fun MutableMap<String, String>.putCommonPersonFields(
-        ssn: String,
-        firstName: String,
-        middleName: String?,
-        lastName: String,
-        email: String?,
-        phone: String?,
-    ) {
-        putOrEmpty("ssn", ssn)
-        putOrEmpty("firstName", firstName)
-        putOrEmpty("middleName", middleName)
-        putOrEmpty("lastName", lastName)
-        putOrEmpty("email", email)
-        putOrEmpty("phone", phone)
+    private fun mapGuardiansToInstanceObjects(guardians: List<Guardian>): List<InstanceObject> {
+        return guardians.map { guardian ->
+            InstanceObject(
+                valuePerKey =
+                    buildMap {
+                        putOrEmpty("role", guardian.role)
+                        putOrEmpty("ssn", guardian.ssn)
+                        putOrEmpty("first_name", guardian.firstName)
+                        putOrEmpty("middle_name", guardian.middleName)
+                        putOrEmpty("last_name", guardian.lastName)
+                        putOrEmpty("address.street_address", guardian.address.streetAddress)
+                        putOrEmpty("address.postal_code", guardian.address.postalCode)
+                        putOrEmpty("address.city", guardian.address.city)
+                        putOrEmpty("email", guardian.email)
+                        putOrEmpty("phone", guardian.phone)
+                    },
+            )
+        }
     }
 }

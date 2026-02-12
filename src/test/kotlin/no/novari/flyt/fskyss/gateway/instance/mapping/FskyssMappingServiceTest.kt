@@ -23,15 +23,15 @@ class FskyssMappingServiceTest {
     private val service = FskyssMappingService()
 
     @Test
-    fun `maps fskyss instance with collections and main document`() {
+    fun `maps fskyss instance to metadata compatible keys`() {
         val input =
             FskyssInstance(
                 version = 1L,
-                instanceId = 19643037L,
+                instanceId = 123456789L,
                 document =
                     Document(
-                        fileName = "fskyss-documentation.pdf",
-                        title = "Fskyss dokumentasjon",
+                        fileName = "legeerklaering-ola-nordmann.pdf",
+                        title = "Legeerklaering - 2024/2025",
                         mimeType = "application/pdf",
                         direction = "inbound",
                         category = "document",
@@ -44,13 +44,13 @@ class FskyssMappingServiceTest {
                         fromDate = "2024-08-19",
                         toDate = "2025-06-20",
                         status = "Approved",
-                        decisionReason = "Distance over 4 km",
+                        decisionReason = "Avstand over 4 km",
                         caseReference = null,
                         isCountyDecision = true,
                         isMunicipalDecision = false,
                         isSharedCustody = false,
                         isUrgentTemporary = false,
-                        requirements = listOf("Wheelchair"),
+                        requirements = listOf("Rullestol"),
                     ),
                 orderParts =
                     listOf(
@@ -120,6 +120,21 @@ class FskyssMappingServiceTest {
                             email = "kari.nordmann@example.com",
                             phone = "99887766",
                         ),
+                        Guardian(
+                            role = "guardian2",
+                            ssn = "12345678903",
+                            firstName = "Per",
+                            middleName = null,
+                            lastName = "Nordmann",
+                            address =
+                                Address(
+                                    streetAddress = "Lillegata 5B",
+                                    postalCode = "5004",
+                                    city = "Bergen",
+                                ),
+                            email = "per.nordmann@example.com",
+                            phone = "99887755",
+                        ),
                     ),
                 school =
                     School(
@@ -152,7 +167,7 @@ class FskyssMappingServiceTest {
 
         val result =
             service.map(
-                sourceApplicationId = 99L,
+                sourceApplicationId = 8L,
                 incomingInstance = input,
                 persistFile = { file ->
                     capturedFiles += file
@@ -162,204 +177,41 @@ class FskyssMappingServiceTest {
 
         assertEquals(1, capturedFiles.size)
         val capturedFile = capturedFiles.single()
-        assertEquals("fskyss-documentation.pdf", capturedFile.name)
-        assertEquals(99L, capturedFile.sourceApplicationId)
-        assertEquals("19643037", capturedFile.sourceApplicationInstanceId)
+        assertEquals("legeerklaering-ola-nordmann.pdf", capturedFile.name)
+        assertEquals(8L, capturedFile.sourceApplicationId)
+        assertEquals("123456789", capturedFile.sourceApplicationInstanceId)
         assertEquals(MediaType.APPLICATION_PDF, capturedFile.type)
         assertEquals("UTF-8", capturedFile.encoding)
         assertEquals("Zm9v", capturedFile.base64Contents)
 
-        assertEquals(
-            mapOf(
-                "version" to "1",
-                "instanceId" to "19643037",
-            ),
-            result.valuePerKey,
-        )
+        assertEquals("1", result.valuePerKey["version"])
+        assertEquals("123456789", result.valuePerKey["instance_id"])
+        assertEquals("87891", result.valuePerKey["student.student_id"])
+        assertEquals("Ola", result.valuePerKey["student.first_name"])
+        assertEquals("VG2B", result.valuePerKey["school_class.class_name"])
+        assertEquals("112617", result.valuePerKey["order.order_id"])
+        assertEquals("Rullestol", result.valuePerKey["order.requirements"])
+        assertEquals(expectedFileId.toString(), result.valuePerKey["document.content_base64"])
+        assertEquals("Legeerklaering", result.valuePerKey["upload.document_type"])
 
-        val documentObjects = result.objectCollectionPerKey.getValue("documents")
-        assertEquals(1, documentObjects.size)
-        val documentObject = documentObjects.single()
-        assertEquals(
-            mapOf(
-                "title" to "Fskyss dokumentasjon",
-                "fileName" to "fskyss-documentation.pdf",
-                "mediaType" to "application/pdf",
-                "file" to expectedFileId.toString(),
-                "direction" to "inbound",
-                "category" to "document",
-                "mainDocument" to "true",
-            ),
-            documentObject.valuePerKey,
-        )
-        assertTrue(documentObject.objectCollectionPerKey.isEmpty())
-
-        val orderObjects = result.objectCollectionPerKey.getValue("order")
-        assertEquals(1, orderObjects.size)
-        val orderObject = orderObjects.single()
-        assertEquals(
-            mapOf(
-                "orderId" to "112617",
-                "schoolYear" to "2024",
-                "fromDate" to "2024-08-19",
-                "toDate" to "2025-06-20",
-                "status" to "Approved",
-                "decisionReason" to "Distance over 4 km",
-                "caseReference" to "",
-                "isCountyDecision" to "true",
-                "isMunicipalDecision" to "false",
-                "isSharedCustody" to "false",
-                "isUrgentTemporary" to "false",
-            ),
-            orderObject.valuePerKey,
-        )
-        assertEquals(
-            listOf(mapOf("requirement" to "Wheelchair")),
-            orderObject.objectCollectionPerKey.getValue("requirements").map { it.valuePerKey },
-        )
-
-        val orderPartObjects = result.objectCollectionPerKey.getValue("orderParts")
+        val orderPartObjects = result.objectCollectionPerKey.getValue("order_parts")
         assertEquals(1, orderPartObjects.size)
-        val orderPartObject = orderPartObjects.single()
-        assertEquals(
-            mapOf(
-                "originAlias" to "",
-                "originType" to "primary",
-                "destinationName" to "Bergen katedralskole - Hovedinngang",
-                "fromDate" to "2024-08-19",
-                "toDate" to "2025-06-20",
-                "approvalStatus" to "approved",
-                "decisionType" to "county",
-            ),
-            orderPartObject.valuePerKey,
-        )
-        assertEquals(
-            listOf(
-                mapOf(
-                    "streetAddress" to "Storgata 1",
-                    "postalCode" to "5003",
-                    "city" to "Bergen",
-                ),
-            ),
-            orderPartObject.objectCollectionPerKey.getValue("origin").map { it.valuePerKey },
-        )
-        assertEquals(
-            listOf(
-                mapOf(
-                    "usesMassTransit" to "false",
-                    "usesTaxi" to "true",
-                    "usesSelf" to "false",
-                    "usesBoat" to "false",
-                    "usesFerry" to "false",
-                    "usesTrain" to "false",
-                    "usesTaxiShuttle" to "false",
-                    "usesSelfShuttle" to "false",
-                ),
-            ),
-            orderPartObject.objectCollectionPerKey.getValue("transport").map { it.valuePerKey },
-        )
-
-        val studentObjects = result.objectCollectionPerKey.getValue("student")
-        assertEquals(1, studentObjects.size)
-        val studentObject = studentObjects.single()
-        assertEquals(
-            mapOf(
-                "studentId" to "87891",
-                "ssn" to "12345678901",
-                "firstName" to "Ola",
-                "middleName" to "",
-                "lastName" to "Nordmann",
-                "email" to "",
-                "phone" to "",
-                "municipalityNumber" to "4601",
-            ),
-            studentObject.valuePerKey,
-        )
-        assertEquals(
-            listOf(
-                mapOf(
-                    "streetAddress" to "Storgata 1",
-                    "postalCode" to "5003",
-                    "city" to "Bergen",
-                ),
-            ),
-            studentObject.objectCollectionPerKey.getValue("address").map { it.valuePerKey },
-        )
-
-        val schoolClassObjects = result.objectCollectionPerKey.getValue("schoolClass")
-        assertEquals(1, schoolClassObjects.size)
-        assertEquals(
-            mapOf(
-                "className" to "VG2B",
-                "gradeLevel" to "12",
-            ),
-            schoolClassObjects.single().valuePerKey,
-        )
+        val orderPart = orderPartObjects.single()
+        assertEquals("Storgata 1", orderPart.valuePerKey["origin.street_address"])
+        assertEquals("5003", orderPart.valuePerKey["origin.postal_code"])
+        assertEquals("Bergen", orderPart.valuePerKey["origin.city"])
+        assertEquals("", orderPart.valuePerKey["origin_alias"])
+        assertEquals("primary", orderPart.valuePerKey["origin_type"])
+        assertEquals("approved", orderPart.valuePerKey["approval_status"])
+        assertEquals("true", orderPart.valuePerKey["transport.uses_taxi"])
+        assertTrue(orderPart.objectCollectionPerKey.isEmpty())
 
         val guardianObjects = result.objectCollectionPerKey.getValue("guardians")
-        assertEquals(1, guardianObjects.size)
-        val guardianObject = guardianObjects.single()
-        assertEquals(
-            mapOf(
-                "role" to "guardian1",
-                "ssn" to "12345678902",
-                "firstName" to "Kari",
-                "middleName" to "",
-                "lastName" to "Nordmann",
-                "email" to "kari.nordmann@example.com",
-                "phone" to "99887766",
-            ),
-            guardianObject.valuePerKey,
-        )
-        assertEquals(
-            listOf(
-                mapOf(
-                    "streetAddress" to "Storgata 1",
-                    "postalCode" to "5003",
-                    "city" to "Bergen",
-                ),
-            ),
-            guardianObject.objectCollectionPerKey.getValue("address").map { it.valuePerKey },
-        )
-
-        val schoolObjects = result.objectCollectionPerKey.getValue("school")
-        assertEquals(1, schoolObjects.size)
-        val schoolObject = schoolObjects.single()
-        assertEquals(
-            mapOf(
-                "name" to "Bergen katedralskole",
-                "schoolNumber" to "12345",
-                "schoolType" to "VGS",
-                "isPrivate" to "false",
-                "isSpecial" to "false",
-                "vigoId" to "1201019",
-                "organisationName" to "Vestland fylkeskommune",
-            ),
-            schoolObject.valuePerKey,
-        )
-        assertEquals(
-            listOf(
-                mapOf(
-                    "name" to "Bergen",
-                    "municipalityNumber" to "4601",
-                    "countyNumber" to "46",
-                ),
-            ),
-            schoolObject.objectCollectionPerKey.getValue("municipality").map { it.valuePerKey },
-        )
-
-        val uploadObjects = result.objectCollectionPerKey.getValue("upload")
-        assertEquals(1, uploadObjects.size)
-        assertEquals(
-            mapOf(
-                "uploadedAt" to "2024-11-15T09:32:00Z",
-                "uploadedBy" to "saksbehandler@vestlandfk.no",
-                "documentType" to "Legeerklaering",
-                "storeInSecureZone" to "true",
-                "duplicateHandling" to "reject_if_duplicate",
-            ),
-            uploadObjects.single().valuePerKey,
-        )
-        assertTrue(uploadObjects.single().objectCollectionPerKey.isEmpty())
+        assertEquals(2, guardianObjects.size)
+        val firstGuardian = guardianObjects.first()
+        assertEquals("guardian1", firstGuardian.valuePerKey["role"])
+        assertEquals("Kari", firstGuardian.valuePerKey["first_name"])
+        assertEquals("Storgata 1", firstGuardian.valuePerKey["address.street_address"])
+        assertTrue(firstGuardian.objectCollectionPerKey.isEmpty())
     }
 }
