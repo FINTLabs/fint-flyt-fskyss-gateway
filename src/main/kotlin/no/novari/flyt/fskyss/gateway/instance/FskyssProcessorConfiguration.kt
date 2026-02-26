@@ -15,7 +15,7 @@ class FskyssProcessorConfiguration {
     ): InstanceProcessor<FskyssInstance> {
         return instanceProcessorFactoryService.createInstanceProcessor(
             "fskyss",
-            { instance -> instance.instanceId.toString() },
+            { instance -> instance.instanceId },
             fskyssMappingService,
         )
     }

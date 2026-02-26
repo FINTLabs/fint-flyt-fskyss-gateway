@@ -17,7 +17,7 @@ class FskyssMappingService : InstanceMapper<FskyssInstance> {
         incomingInstance: FskyssInstance,
         persistFile: (File) -> UUID,
     ): InstanceObject {
-        val sourceApplicationInstanceId = incomingInstance.instanceId.toString()
+        val sourceApplicationInstanceId = incomingInstance.instanceId
         val fileId =
             persistDocument(
                 persistFile = persistFile,

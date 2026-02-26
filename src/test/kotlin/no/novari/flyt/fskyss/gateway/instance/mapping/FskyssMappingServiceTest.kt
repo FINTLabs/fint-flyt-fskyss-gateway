@@ -26,8 +26,8 @@ class FskyssMappingServiceTest {
     fun `maps fskyss instance to metadata compatible keys`() {
         val input =
             FskyssInstance(
-                version = 1L,
-                instanceId = 123456789L,
+                version = "1",
+                instanceId = "123456789",
                 document =
                     Document(
                         fileName = "legeerklaering-ola-nordmann.pdf",
@@ -39,17 +39,17 @@ class FskyssMappingServiceTest {
                     ),
                 order =
                     Order(
-                        orderId = 112617L,
-                        schoolYear = 2024,
+                        orderId = "112617",
+                        schoolYear = "2024",
                         fromDate = "2024-08-19",
                         toDate = "2025-06-20",
                         status = "Approved",
                         decisionReason = "Avstand over 4 km",
                         caseReference = null,
-                        isCountyDecision = true,
-                        isMunicipalDecision = false,
-                        isSharedCustody = false,
-                        isUrgentTemporary = false,
+                        isCountyDecision = "true",
+                        isMunicipalDecision = "false",
+                        isSharedCustody = "false",
+                        isUrgentTemporary = "false",
                         requirements = listOf("Rullestol"),
                     ),
                 orderParts =
@@ -70,20 +70,20 @@ class FskyssMappingServiceTest {
                             decisionType = "county",
                             transport =
                                 Transport(
-                                    usesMassTransit = false,
-                                    usesTaxi = true,
-                                    usesSelf = false,
-                                    usesBoat = false,
-                                    usesFerry = false,
-                                    usesTrain = false,
-                                    usesTaxiShuttle = false,
-                                    usesSelfShuttle = false,
+                                    usesMassTransit = "false",
+                                    usesTaxi = "true",
+                                    usesSelf = "false",
+                                    usesBoat = "false",
+                                    usesFerry = "false",
+                                    usesTrain = "false",
+                                    usesTaxiShuttle = "false",
+                                    usesSelfShuttle = "false",
                                 ),
                         ),
                     ),
                 student =
                     Student(
-                        studentId = 87891L,
+                        studentId = "87891",
                         ssn = "12345678901",
                         firstName = "Ola",
                         middleName = null,
@@ -101,7 +101,7 @@ class FskyssMappingServiceTest {
                 schoolClass =
                     SchoolClass(
                         className = "VG2B",
-                        gradeLevel = 12,
+                        gradeLevel = "12",
                     ),
                 guardians =
                     listOf(
@@ -139,10 +139,10 @@ class FskyssMappingServiceTest {
                 school =
                     School(
                         name = "Bergen katedralskole",
-                        schoolNumber = 12345L,
+                        schoolNumber = "12345",
                         schoolType = "VGS",
-                        isPrivate = false,
-                        isSpecial = false,
+                        isPrivate = "false",
+                        isSpecial = "false",
                         vigoId = "1201019",
                         municipality =
                             Municipality(
@@ -157,7 +157,7 @@ class FskyssMappingServiceTest {
                         uploadedAt = "2024-11-15T09:32:00Z",
                         uploadedBy = "saksbehandler@vestlandfk.no",
                         documentType = "Legeerklaering",
-                        storeInSecureZone = true,
+                        storeInSecureZone = "true",
                         duplicateHandling = "reject_if_duplicate",
                     ),
             )
