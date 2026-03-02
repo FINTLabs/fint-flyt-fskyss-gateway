@@ -45,7 +45,7 @@ class FskyssMappingServiceTest {
                         toDate = "2025-06-20",
                         status = "Approved",
                         decisionReason = "Avstand over 4 km",
-                        caseReference = null,
+                        caseReference = "",
                         isCountyDecision = "true",
                         isMunicipalDecision = "false",
                         isSharedCustody = "false",
@@ -61,7 +61,7 @@ class FskyssMappingServiceTest {
                                     postalCode = "5003",
                                     city = "Bergen",
                                 ),
-                            originAlias = null,
+                            originAlias = "",
                             originType = "primary",
                             destinationName = "Bergen katedralskole - Hovedinngang",
                             fromDate = "2024-08-19",
@@ -86,7 +86,7 @@ class FskyssMappingServiceTest {
                         studentId = "87891",
                         ssn = "12345678901",
                         firstName = "Ola",
-                        middleName = null,
+                        middleName = "",
                         lastName = "Nordmann",
                         fullName = "Ola Nordmann",
                         birthDate = "190784",
@@ -96,8 +96,8 @@ class FskyssMappingServiceTest {
                                 postalCode = "5003",
                                 city = "Bergen",
                             ),
-                        email = null,
-                        phone = null,
+                        email = "",
+                        phone = "",
                         municipalityNumber = "4601",
                     ),
                 schoolClass =
@@ -111,7 +111,7 @@ class FskyssMappingServiceTest {
                             role = "guardian1",
                             ssn = "12345678902",
                             firstName = "Kari",
-                            middleName = null,
+                            middleName = "",
                             lastName = "Nordmann",
                             fullName = "Kari Nordmann",
                             birthDate = "170384",
@@ -128,7 +128,7 @@ class FskyssMappingServiceTest {
                             role = "guardian2",
                             ssn = "12345678903",
                             firstName = "Per",
-                            middleName = null,
+                            middleName = "",
                             lastName = "Nordmann",
                             fullName = "Per Nordmann",
                             birthDate = "190784",
@@ -197,8 +197,12 @@ class FskyssMappingServiceTest {
         assertEquals("Ola", result.valuePerKey["student.first_name"])
         assertEquals("Ola Nordmann", result.valuePerKey["student.full_name"])
         assertEquals("190784", result.valuePerKey["student.birth_date"])
+        assertEquals("", result.valuePerKey["student.middle_name"])
+        assertEquals("", result.valuePerKey["student.email"])
+        assertEquals("", result.valuePerKey["student.phone"])
         assertEquals("VG2B", result.valuePerKey["school_class.class_name"])
         assertEquals("112617", result.valuePerKey["order.order_id"])
+        assertEquals("", result.valuePerKey["order.case_reference"])
         assertEquals("Rullestol", result.valuePerKey["order.requirements"])
         assertEquals(expectedFileId.toString(), result.valuePerKey["document.content_base64"])
         assertEquals("Legeerklaering", result.valuePerKey["upload.document_type"])
@@ -223,6 +227,9 @@ class FskyssMappingServiceTest {
         assertEquals("Kari", firstGuardian.valuePerKey["first_name"])
         assertEquals("Kari Nordmann", firstGuardian.valuePerKey["full_name"])
         assertEquals("170384", firstGuardian.valuePerKey["birth_date"])
+        assertEquals("", firstGuardian.valuePerKey["middle_name"])
+        assertEquals("kari.nordmann@example.com", firstGuardian.valuePerKey["email"])
+        assertEquals("99887766", firstGuardian.valuePerKey["phone"])
         assertEquals("Storgata 1", firstGuardian.valuePerKey["address.street_address"])
         assertTrue(firstGuardian.objectCollectionPerKey.isEmpty())
 
@@ -231,6 +238,9 @@ class FskyssMappingServiceTest {
         assertEquals("Per", secondGuardian.valuePerKey["first_name"])
         assertEquals("Per Nordmann", secondGuardian.valuePerKey["full_name"])
         assertEquals("190784", secondGuardian.valuePerKey["birth_date"])
+        assertEquals("", secondGuardian.valuePerKey["middle_name"])
+        assertEquals("per.nordmann@example.com", secondGuardian.valuePerKey["email"])
+        assertEquals("99887755", secondGuardian.valuePerKey["phone"])
         assertEquals("Lillegata 5B", secondGuardian.valuePerKey["address.street_address"])
         assertTrue(secondGuardian.objectCollectionPerKey.isEmpty())
     }
