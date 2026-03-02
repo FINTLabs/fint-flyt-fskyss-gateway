@@ -7,8 +7,8 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy::class)
 data class FskyssInstance(
-    val version: Long,
-    val instanceId: Long,
+    val version: String,
+    val instanceId: String,
     val document: Document,
     val order: Order,
     val orderParts: List<OrderPart>,
@@ -33,17 +33,17 @@ data class Document(
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy::class)
 data class Order(
-    val orderId: Long,
-    val schoolYear: Int,
+    val orderId: String,
+    val schoolYear: String,
     val fromDate: String,
     val toDate: String,
     val status: String,
     val decisionReason: String,
     val caseReference: String?,
-    val isCountyDecision: Boolean,
-    val isMunicipalDecision: Boolean,
-    val isSharedCustody: Boolean,
-    val isUrgentTemporary: Boolean,
+    val isCountyDecision: String,
+    val isMunicipalDecision: String,
+    val isSharedCustody: String,
+    val isUrgentTemporary: String,
     val requirements: List<String>,
 )
 
@@ -72,24 +72,26 @@ data class Address(
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy::class)
 data class Transport(
-    val usesMassTransit: Boolean,
-    val usesTaxi: Boolean,
-    val usesSelf: Boolean,
-    val usesBoat: Boolean,
-    val usesFerry: Boolean,
-    val usesTrain: Boolean,
-    val usesTaxiShuttle: Boolean,
-    val usesSelfShuttle: Boolean,
+    val usesMassTransit: String,
+    val usesTaxi: String,
+    val usesSelf: String,
+    val usesBoat: String,
+    val usesFerry: String,
+    val usesTrain: String,
+    val usesTaxiShuttle: String,
+    val usesSelfShuttle: String,
 )
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy::class)
 data class Student(
-    val studentId: Long,
+    val studentId: String,
     val ssn: String,
     val firstName: String,
     val middleName: String?,
     val lastName: String,
+    val fullName: String,
+    val birthDate: String,
     val address: Address,
     val email: String?,
     val phone: String?,
@@ -100,7 +102,7 @@ data class Student(
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy::class)
 data class SchoolClass(
     val className: String,
-    val gradeLevel: Int,
+    val gradeLevel: String,
 )
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -111,6 +113,8 @@ data class Guardian(
     val firstName: String,
     val middleName: String?,
     val lastName: String,
+    val fullName: String,
+    val birthDate: String,
     val address: Address,
     val email: String?,
     val phone: String?,
@@ -120,10 +124,10 @@ data class Guardian(
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy::class)
 data class School(
     val name: String,
-    val schoolNumber: Long,
+    val schoolNumber: String,
     val schoolType: String,
-    val isPrivate: Boolean,
-    val isSpecial: Boolean,
+    val isPrivate: String,
+    val isSpecial: String,
     val vigoId: String,
     val municipality: Municipality,
     val organisationName: String,
@@ -142,7 +146,8 @@ data class Municipality(
 data class Upload(
     val uploadedAt: String,
     val uploadedBy: String,
+    val uploadedByIdentifier: String,
     val documentType: String,
-    val storeInSecureZone: Boolean,
+    val storeInSecureZone: String,
     val duplicateHandling: String,
 )

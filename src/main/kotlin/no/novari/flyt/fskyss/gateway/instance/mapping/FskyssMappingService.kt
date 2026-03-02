@@ -17,7 +17,7 @@ class FskyssMappingService : InstanceMapper<FskyssInstance> {
         incomingInstance: FskyssInstance,
         persistFile: (File) -> UUID,
     ): InstanceObject {
-        val sourceApplicationInstanceId = incomingInstance.instanceId.toString()
+        val sourceApplicationInstanceId = incomingInstance.instanceId
         val fileId =
             persistDocument(
                 persistFile = persistFile,
@@ -56,6 +56,8 @@ class FskyssMappingService : InstanceMapper<FskyssInstance> {
                 putOrEmpty("student.first_name", incomingInstance.student.firstName)
                 putOrEmpty("student.middle_name", incomingInstance.student.middleName)
                 putOrEmpty("student.last_name", incomingInstance.student.lastName)
+                putOrEmpty("student.full_name", incomingInstance.student.fullName)
+                putOrEmpty("student.birth_date", incomingInstance.student.birthDate)
                 putOrEmpty("student.address.street_address", incomingInstance.student.address.streetAddress)
                 putOrEmpty("student.address.postal_code", incomingInstance.student.address.postalCode)
                 putOrEmpty("student.address.city", incomingInstance.student.address.city)
@@ -82,6 +84,7 @@ class FskyssMappingService : InstanceMapper<FskyssInstance> {
 
                 putOrEmpty("upload.uploaded_at", incomingInstance.upload.uploadedAt)
                 putOrEmpty("upload.uploaded_by", incomingInstance.upload.uploadedBy)
+                putOrEmpty("upload.uploaded_by_identifier", incomingInstance.upload.uploadedByIdentifier)
                 putOrEmpty("upload.document_type", incomingInstance.upload.documentType)
                 putOrEmpty("upload.store_in_secure_zone", incomingInstance.upload.storeInSecureZone)
                 putOrEmpty("upload.duplicate_handling", incomingInstance.upload.duplicateHandling)
@@ -153,6 +156,8 @@ class FskyssMappingService : InstanceMapper<FskyssInstance> {
                         putOrEmpty("first_name", guardian.firstName)
                         putOrEmpty("middle_name", guardian.middleName)
                         putOrEmpty("last_name", guardian.lastName)
+                        putOrEmpty("full_name", guardian.fullName)
+                        putOrEmpty("birth_date", guardian.birthDate)
                         putOrEmpty("address.street_address", guardian.address.streetAddress)
                         putOrEmpty("address.postal_code", guardian.address.postalCode)
                         putOrEmpty("address.city", guardian.address.city)
