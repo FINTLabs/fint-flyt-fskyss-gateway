@@ -39,7 +39,7 @@ data class Order(
     val toDate: String,
     val status: String,
     val decisionReason: String,
-    val caseReference: String,
+    val caseReference: String?,
     val isCountyDecision: String,
     val isMunicipalDecision: String,
     val isSharedCustody: String,
@@ -51,7 +51,7 @@ data class Order(
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy::class)
 data class OrderPart(
     val origin: Address,
-    val originAlias: String,
+    val originAlias: String?,
     val originType: String,
     val destinationName: String,
     val fromDate: String,
@@ -88,13 +88,13 @@ data class Student(
     val studentId: String,
     val ssn: String,
     val firstName: String,
-    val middleName: String,
+    val middleName: String?,
     val lastName: String,
     val fullName: String,
     val birthDate: String,
     val address: Address,
-    val email: String,
-    val phone: String,
+    val email: String?,
+    val phone: String?,
     val municipalityNumber: String,
 )
 
@@ -111,13 +111,13 @@ data class Guardian(
     val role: String,
     val ssn: String,
     val firstName: String,
-    val middleName: String,
+    val middleName: String?,
     val lastName: String,
     val fullName: String,
     val birthDate: String,
     val address: Address,
-    val email: String,
-    val phone: String,
+    val email: String?,
+    val phone: String?,
 )
 
 @JsonIgnoreProperties(ignoreUnknown = true)
