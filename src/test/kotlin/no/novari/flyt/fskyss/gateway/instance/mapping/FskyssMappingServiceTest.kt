@@ -1,6 +1,7 @@
 package no.novari.flyt.fskyss.gateway.instance.mapping
 
 import no.novari.flyt.fskyss.gateway.instance.Address
+import no.novari.flyt.fskyss.gateway.instance.CorrespondenceParty
 import no.novari.flyt.fskyss.gateway.instance.Document
 import no.novari.flyt.fskyss.gateway.instance.FskyssInstance
 import no.novari.flyt.fskyss.gateway.instance.Guardian
@@ -142,6 +143,21 @@ class FskyssMappingServiceTest {
                             phone = "99887755",
                         ),
                     ),
+                correspondenceParties =
+                    listOf(
+                        CorrespondenceParty(
+                            name = "Vestland fylkeskommune",
+                            orgNumber = "821311632",
+                            ssn = null,
+                            type = "organization",
+                        ),
+                        CorrespondenceParty(
+                            name = "Kari Nordmann",
+                            orgNumber = null,
+                            ssn = "12345678902",
+                            type = "person",
+                        ),
+                    ),
                 school =
                     School(
                         name = "Bergen katedralskole",
@@ -243,5 +259,22 @@ class FskyssMappingServiceTest {
         assertEquals("99887755", secondGuardian.valuePerKey["phone"])
         assertEquals("Lillegata 5B", secondGuardian.valuePerKey["address.street_address"])
         assertTrue(secondGuardian.objectCollectionPerKey.isEmpty())
+
+        val correspondencePartyObjects = result.objectCollectionPerKey.getValue("correspondence_parties")
+        assertEquals(2, correspondencePartyObjects.size)
+
+        val organizationCorrespondenceParty = correspondencePartyObjects.first()
+        assertEquals("Vestland fylkeskommune", organizationCorrespondenceParty.valuePerKey["name"])
+        assertEquals("821311632", organizationCorrespondenceParty.valuePerKey["org_number"])
+        assertEquals("", organizationCorrespondenceParty.valuePerKey["ssn"])
+        assertEquals("organization", organizationCorrespondenceParty.valuePerKey["type"])
+        assertTrue(organizationCorrespondenceParty.objectCollectionPerKey.isEmpty())
+
+        val personCorrespondenceParty = correspondencePartyObjects.elementAt(1)
+        assertEquals("Kari Nordmann", personCorrespondenceParty.valuePerKey["name"])
+        assertEquals("", personCorrespondenceParty.valuePerKey["org_number"])
+        assertEquals("12345678902", personCorrespondenceParty.valuePerKey["ssn"])
+        assertEquals("person", personCorrespondenceParty.valuePerKey["type"])
+        assertTrue(personCorrespondenceParty.objectCollectionPerKey.isEmpty())
     }
 }

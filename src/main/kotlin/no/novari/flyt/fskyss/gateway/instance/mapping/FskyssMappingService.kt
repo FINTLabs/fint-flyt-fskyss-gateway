@@ -1,5 +1,6 @@
 package no.novari.flyt.fskyss.gateway.instance.mapping
 
+import no.novari.flyt.fskyss.gateway.instance.CorrespondenceParty
 import no.novari.flyt.fskyss.gateway.instance.FskyssInstance
 import no.novari.flyt.fskyss.gateway.instance.Guardian
 import no.novari.flyt.fskyss.gateway.instance.OrderPart
@@ -94,6 +95,8 @@ class FskyssMappingService : InstanceMapper<FskyssInstance> {
             mutableMapOf<String, Collection<InstanceObject>>(
                 "order_parts" to mapOrderPartsToInstanceObjects(incomingInstance.orderParts),
                 "guardians" to mapGuardiansToInstanceObjects(incomingInstance.guardians),
+                "correspondence_parties" to
+                    mapCorrespondencePartiesToInstanceObjects(incomingInstance.correspondenceParties),
             )
 
         return InstanceObject(valuePerKey, objectCollectionPerKey)
@@ -163,6 +166,22 @@ class FskyssMappingService : InstanceMapper<FskyssInstance> {
                         putOrEmpty("address.city", guardian.address.city)
                         putOrEmpty("email", guardian.email)
                         putOrEmpty("phone", guardian.phone)
+                    },
+            )
+        }
+    }
+
+    private fun mapCorrespondencePartiesToInstanceObjects(
+        correspondenceParties: List<CorrespondenceParty>,
+    ): List<InstanceObject> {
+        return correspondenceParties.map { correspondenceParty ->
+            InstanceObject(
+                valuePerKey =
+                    buildMap {
+                        putOrEmpty("name", correspondenceParty.name)
+                        putOrEmpty("org_number", correspondenceParty.orgNumber)
+                        putOrEmpty("ssn", correspondenceParty.ssn)
+                        putOrEmpty("type", correspondenceParty.type)
                     },
             )
         }
