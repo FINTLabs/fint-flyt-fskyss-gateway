@@ -15,6 +15,7 @@ data class FskyssInstance(
     val student: Student,
     val schoolClass: SchoolClass,
     val guardians: List<Guardian>,
+    val correspondenceParties: List<CorrespondenceParty>,
     val school: School,
     val upload: Upload,
 )
@@ -118,6 +119,15 @@ data class Guardian(
     val address: Address,
     val email: String?,
     val phone: String?,
+)
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy::class)
+data class CorrespondenceParty(
+    val name: String,
+    val orgNumber: String?,
+    val ssn: String?,
+    val type: String,
 )
 
 @JsonIgnoreProperties(ignoreUnknown = true)
