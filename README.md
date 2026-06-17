@@ -8,7 +8,7 @@ The application includes examples of both simple and advanced usage:
 
 ## Technology
 - Spring Boot 3.5
-- Java 21
+- Java 25
 - Kotlin
 - ktlint
 - Blocking architecture (non-reactive)
