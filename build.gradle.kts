@@ -40,6 +40,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
+    implementation("net.logstash.logback:logstash-logback-encoder:9.0")
 
     implementation("no.novari:flyt-web-instance-gateway:3.1.0-rc-3")
     implementation("no.novari:telemetry-starter:0.0.4")
