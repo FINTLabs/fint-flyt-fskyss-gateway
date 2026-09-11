@@ -13,7 +13,7 @@ import no.novari.flyt.fskyss.gateway.instance.SchoolClass
 import no.novari.flyt.fskyss.gateway.instance.Student
 import no.novari.flyt.fskyss.gateway.instance.Transport
 import no.novari.flyt.fskyss.gateway.instance.Upload
-import no.novari.flyt.gateway.webinstance.model.File
+import no.novari.flyt.gateway.instance.model.File
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
