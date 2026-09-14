@@ -1,8 +1,8 @@
 package no.novari.flyt.fskyss.gateway.instance
 
 import no.novari.flyt.fskyss.gateway.instance.mapping.FskyssMappingService
-import no.novari.flyt.gateway.webinstance.InstanceProcessor
-import no.novari.flyt.gateway.webinstance.InstanceProcessorFactoryService
+import no.novari.flyt.gateway.instance.InstanceProcessor
+import no.novari.flyt.gateway.instance.InstanceProcessorFactoryService
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
