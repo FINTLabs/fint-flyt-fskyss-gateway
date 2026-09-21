@@ -18,8 +18,8 @@ buildscript {
 plugins {
     id("org.springframework.boot") version "3.5.16"
     id("io.spring.dependency-management") version "1.1.7"
-    kotlin("jvm") version "2.4.20"
-    kotlin("plugin.spring") version "2.4.20"
+    kotlin("jvm") version "2.4.10"
+    kotlin("plugin.spring") version "2.4.10"
     id("org.jlleitschuh.gradle.ktlint") version "14.2.0"
 }
 
@@ -68,7 +68,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
 
-    implementation("no.novari:flyt-gateway-starter:4.0.0")
+    implementation("no.novari:flyt-gateway-starter:4.1.0")
     implementation("no.novari:flyt-cache:3.0.0")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
