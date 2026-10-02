@@ -71,7 +71,8 @@ dependencies {
     implementation("no.novari:flyt-gateway-starter:4.1.0")
     implementation("no.novari:flyt-cache:3.0.0")
 
-    runtimeOnly("net.logstash.logback:logstash-logback-encoder:9.0")
+    // Pinned to 8.x: 9.x pulls in Jackson 3 (tools.jackson), while Spring Boot 3.5 uses Jackson 2
+    runtimeOnly("net.logstash.logback:logstash-logback-encoder:8.1")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
