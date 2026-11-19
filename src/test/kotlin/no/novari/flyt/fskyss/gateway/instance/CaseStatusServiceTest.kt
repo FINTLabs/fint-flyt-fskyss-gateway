@@ -1,6 +1,6 @@
 package no.novari.flyt.fskyss.gateway.instance
 
-import no.novari.flyt.gateway.instance.kafka.ArchiveCaseIdRequestService
+import no.novari.flyt.gateway.instance.HistoryClient
 import no.novari.flyt.webresourceserver.security.client.sourceapplication.SourceApplicationAuthorizationService
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
@@ -11,8 +11,8 @@ import org.springframework.security.core.Authentication
 class CaseStatusServiceTest {
     private val sourceApplicationAuthorizationService =
         Mockito.mock(SourceApplicationAuthorizationService::class.java)
-    private val archiveCaseIdRequestService = Mockito.mock(ArchiveCaseIdRequestService::class.java)
-    private val service = CaseStatusService(sourceApplicationAuthorizationService, archiveCaseIdRequestService)
+    private val historyClient = Mockito.mock(HistoryClient::class.java)
+    private val service = CaseStatusService(sourceApplicationAuthorizationService, historyClient)
 
     @Test
     fun `returns case status when archive case id exists`() {
@@ -21,13 +21,13 @@ class CaseStatusServiceTest {
             .`when`(sourceApplicationAuthorizationService.getSourceApplicationId(authentication))
             .thenReturn(123L)
         Mockito
-            .`when`(archiveCaseIdRequestService.getArchiveCaseId(123L, "instance-1"))
+            .`when`(historyClient.getArchiveInstanceId(123L, "instance-1"))
             .thenReturn("archive-1")
 
         val result = service.getCaseStatus(authentication, "instance-1")
 
         assertEquals(CaseStatus("archive-1"), result)
-        Mockito.verify(archiveCaseIdRequestService).getArchiveCaseId(123L, "instance-1")
+        Mockito.verify(historyClient).getArchiveInstanceId(123L, "instance-1")
     }
 
     @Test
@@ -37,7 +37,7 @@ class CaseStatusServiceTest {
             .`when`(sourceApplicationAuthorizationService.getSourceApplicationId(authentication))
             .thenReturn(123L)
         Mockito
-            .`when`(archiveCaseIdRequestService.getArchiveCaseId(123L, "instance-1"))
+            .`when`(historyClient.getArchiveInstanceId(123L, "instance-1"))
             .thenReturn(null)
 
         val result = service.getCaseStatus(authentication, "instance-1")
